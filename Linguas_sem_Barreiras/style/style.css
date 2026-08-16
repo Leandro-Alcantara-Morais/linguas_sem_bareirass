@@ -1,0 +1,43 @@
+
+
+
+
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #f0f4f8;
+    color: #333;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+h1 {
+    font-size: 2.5rem;
+    color: #007BFF;
+}
+
+h2, h3 {
+    color: #333;
+}
+
+.form-group, .form-check {
+    width: 100%;
+    max-width: 600px;
+    margin-top: 15px;
+}
+
+textarea, input[type="file"], select {
+    width: 100%;
+}
+
+button {
+    width: 100%;
+}

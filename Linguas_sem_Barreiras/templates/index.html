@@ -1,0 +1,106 @@
+
+
+
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Leitura Sem Barreiras</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-primary text-center">Leitura Sem Barreiras</h1>
+        <p class="text-center">Inclusão e Acessibilidade em um Só Lugar</p>
+
+        <!-- Formulário para enviar texto ou arquivo -->
+        <form id="process-form" method="POST" action="/processar" enctype="multipart/form-data" class="border p-4 rounded bg-light">
+            <div class="form-group">
+                <label for="input-file">Arquivo de Texto</label>
+                <input type="file" name="input-file" class="form-control" id="input-file">
+            </div>
+
+            <div class="form-group">
+                <label for="input-text">Texto</label>
+                <textarea name="input-text" class="form-control" placeholder="Digite ou arraste seu texto aqui..." id="input-text"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="output-type">Escolha o tipo de saída</label>
+                <select name="output-type" class="form-control" id="output-type">
+                    <option value="audio">Áudio</option>
+                    <option value="braille">Braille</option>
+                    <option value="traducao">Tradução</option>
+                </select>
+            </div>
+
+            <button type="submit" id="generate-button" class="btn btn-primary mt-3">Gerar</button>
+        </form>
+
+        <!-- Feedback de processamento -->
+        <div id="feedback" style="display: none;" class="alert alert-info mt-3">
+            Processando...
+        </div>
+
+        <!-- Exibindo o resultado -->
+        <div id="result-container" style="display: none;" class="mt-5">
+            <h2>Resultado</h2>
+            <div id="result-text"></div>
+            <div id="result-audio"></div>
+            <div id="result-braille"></div>
+        </div>
+    </div>
+
+    <script>
+        // Função para exibir o feedback de "processando"
+        document.getElementById("process-form").addEventListener("submit", function(event) {
+            event.preventDefault(); // Evita o envio tradicional do formulário
+            
+            const feedback = document.getElementById("feedback");
+            feedback.style.display = "block";  // Exibe o feedback
+            feedback.textContent = "Processando...";  // Mensagem de feedback
+
+            // Exibe a área de resultado após o processamento
+            document.getElementById("result-container").style.display = "none";
+
+            // FormData para enviar o conteúdo do formulário
+            const formData = new FormData(this);
+
+            // Envia o formulário via AJAX
+            fetch('/processar', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())  // Espera um JSON de resposta
+            .then(data => {
+                // Processa a resposta e exibe os resultados
+                feedback.style.display = "none";  // Esconde o feedback de "Processando..."
+
+                // Exibe o resultado do texto traduzido
+                if (data.texto_traduzido) {
+                    document.getElementById("result-text").innerHTML = "<h3>Tradução</h3><textarea readonly class='form-control' rows='10'>" + data.texto_traduzido + "</textarea>";
+                }
+
+                // Exibe o resultado do Braille
+                if (data.texto_braille) {
+                    document.getElementById("result-braille").innerHTML = "<h3>Braille</h3><textarea readonly class='form-control' rows='10'>" + data.texto_braille + "</textarea>";
+                }
+
+                // Exibe o áudio gerado
+                if (data.audio_url) {
+                    document.getElementById("result-audio").innerHTML = "<h3>Áudio</h3><audio controls><source src='" + data.audio_url + "' type='audio/wav'></audio>";
+                }
+
+                // Mostra a área de resultados
+                document.getElementById("result-container").style.display = "block";
+            })
+            .catch(error => {
+                feedback.textContent = "Erro ao processar. Tente novamente."; // Exibe erro se houver
+                console.error('Erro:', error);
+            });
+        });
+    </script>
+</body>
+</html>
